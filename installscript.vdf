@@ -1,0 +1,13 @@
+"InstallScript"
+{
+    "Run Process"
+    {
+        "Visual C++ Redist 2019"
+        {
+            "HasRunKey"        "HKEY_LOCAL_MACHINE\\Software\\Valve\\Steam\\Apps\\1193210"
+            "process 1"        "%INSTALLDIR%\\vc_redist.x64.exe"
+            "Command 1"        "/quiet /norestart"
+            "NoCleanUp"        "1"
+        }
+    }
+}

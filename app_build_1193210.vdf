@@ -1,0 +1,37 @@
+"AppBuild"
+{
+    "AppID" "1193210"
+    "Desc" "Hunt the Muglump - Windows Build"
+    "BuildOutput" "output\"
+    "ContentRoot" ""
+    "SetLive" "default"
+    "Preview" "0"
+    "Local" ""
+
+    "Depots"
+    {
+        "1193211"
+        {
+            "FileMapping"
+            {
+                "LocalPath" "*"
+                "DepotPath" "."
+                "recursive" "1"
+            }
+            "FileExclusion" "*.pdb"
+            "FileExclusion" "*.log"
+            "FileExclusion" "*.git*"
+            "FileExclusion" "Library\\*"
+            "FileExclusion" "Logs\\*"
+            "FileExclusion" "Temp\\*"
+            "FileExclusion" "obj\\*"
+            "FileExclusion" "Assets\\*"
+            "FileExclusion" "ProjectSettings\\*"
+            "FileExclusion" "UserSettings\\*"
+            "FileExclusion" "Packages\\*"
+            "FileExclusion" "*.vdf"
+            "FileExclusion" "*.sln"
+            "FileExclusion" "*.csproj"
+        }
+    }
+}

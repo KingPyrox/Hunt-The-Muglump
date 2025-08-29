@@ -1,0 +1,22 @@
+"DepotBuildConfig"
+{
+    "DepotID" "1193211"
+    "ContentRoot" ".\\"
+    "FileMapping"
+    {
+        "LocalPath" "*"
+        "DepotPath" "."
+        "recursive" "1"
+    }
+    "FileExclusion" "steam_appid.txt"
+    "FileExclusion" "*.vdf"
+    "FileExclusion" ".git\\*"
+    "FileExclusion" "Library\\*"
+    "FileExclusion" "Logs\\*"
+    "FileExclusion" "Temp\\*"
+    "FileExclusion" "obj\\*"
+    "FileExclusion" "Assets\\*"
+    "FileExclusion" "ProjectSettings\\*"
+    "FileExclusion" "UserSettings\\*"
+    "FileExclusion" "Packages\\*"
+}
