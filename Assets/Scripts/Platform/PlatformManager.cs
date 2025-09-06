@@ -13,7 +13,7 @@ namespace OldSchoolGames.HuntTheMuglump.Scripts.Platform
     using UnityEngine;
     using Debug = UnityEngine.Debug;
 
-#if UNITY_STEAMWORKS
+#if UNITY_STEAMWORKS && !UNITY_WEBGL
     using Steamworks;
 #endif
 
@@ -28,7 +28,7 @@ namespace OldSchoolGames.HuntTheMuglump.Scripts.Platform
 
     public class PlatformManager : MonoBehaviour
     {
-#if UNITY_STEAMWORKS
+#if UNITY_STEAMWORKS && !UNITY_WEBGL
         public static SteamManager SteamManager
         {
             get => SteamManager.Instance;
@@ -63,11 +63,11 @@ namespace OldSchoolGames.HuntTheMuglump.Scripts.Platform
             get
             {
                 string username = null;
-#if UNITY_STEAM
+#if UNITY_WEBGL
+                username = WebGLLeaderboardManager.Instance.GetPlayerName();
+#elif UNITY_STEAMWORKS && !UNITY_WEBGL
                 username = SteamManager.GetUsername();
-#endif
-
-#if UNITY_IOS
+#elif UNITY_IOS && !UNITY_WEBGL
                 username = GameCenterManager.Instance.GetUsername();
                 Debug.Log($"Username: {username}");
 #endif
@@ -89,7 +89,11 @@ namespace OldSchoolGames.HuntTheMuglump.Scripts.Platform
                 Instance = this;
             }
 
-#if UNITY_STEAM
+#if UNITY_WEBGL
+            // WebGL managers initialize themselves as singletons
+            var achievementManager = WebGLAchievementManager.Instance;
+            var leaderboardManager = WebGLLeaderboardManager.Instance;
+#elif UNITY_STEAMWORKS && !UNITY_WEBGL
             this.leaderboards = new Dictionary<string, Leaderboard>()
             {
                 {LeaderboardNames.TopScores,  new Leaderboard() { Name = LeaderboardNames.TopScores } },
@@ -100,8 +104,7 @@ namespace OldSchoolGames.HuntTheMuglump.Scripts.Platform
             {
                 leaderboard.Init();
             }
-#endif
-#if UNITY_IOS
+#elif UNITY_IOS && !UNITY_WEBGL
             KTGameCenter.SharedCenter().Authenticate();
 #endif
 
@@ -109,12 +112,12 @@ namespace OldSchoolGames.HuntTheMuglump.Scripts.Platform
 
         void OnEnable()
         {
-#if UNITY_IOS
+#if UNITY_IOS && !UNITY_WEBGL
             StartCoroutine(RegisterForGameCenter());
 #endif
         }
 
-#if UNITY_IOS
+#if UNITY_IOS && !UNITY_WEBGL
         IEnumerator RegisterForGameCenter()
         {
             yield return new WaitForSeconds(0.5f);
@@ -140,23 +143,25 @@ namespace OldSchoolGames.HuntTheMuglump.Scripts.Platform
 #endif
         public void EarnBadge(Badge badge)
         {
-#if UNITY_STEAM
+#if UNITY_WEBGL
+            WebGLAchievementManager.Instance.EarnBadge(badge);
+#elif UNITY_STEAMWORKS && !UNITY_WEBGL
             StartCoroutine(nameof(this.EarnBadgeRoutine), badge);
-#endif
-
-#if UNITY_IOS
+#elif UNITY_IOS && !UNITY_WEBGL
             KTGameCenter.SharedCenter().SubmitAchievement(100, badge.Name, true);
 #endif
         }
 
         public void UpdateLeaderboardScore(string leaderboardName, int score)
         {
-#if UNITY_STEAM
+#if UNITY_WEBGL
+            WebGLLeaderboardManager.Instance.SubmitScore(leaderboardName, score);
+#elif UNITY_STEAMWORKS && !UNITY_WEBGL
             this.leaderboards[leaderboardName].UploadLeaderboardScore(score);
 #endif
         }
 
-#if UNITY_STEAM
+#if UNITY_STEAMWORKS && !UNITY_WEBGL
         private IEnumerator EarnBadgeRoutine(Badge badge)
         {
             try
@@ -173,7 +178,7 @@ namespace OldSchoolGames.HuntTheMuglump.Scripts.Platform
         }
 #endif
 
-#if UNITY_IOS
+#if UNITY_IOS && !UNITY_WEBGL
         private void AchievementSubmitted(string achId, string error)
         {
             
@@ -182,17 +187,24 @@ namespace OldSchoolGames.HuntTheMuglump.Scripts.Platform
 
         public void SaveFile(string text)
         {
-#if UNITY_STEAM
+#if UNITY_WEBGL
+            WebGLManager.Instance.SaveData("HTM_SaveGame", text);
+#elif UNITY_STEAMWORKS && !UNITY_WEBGL
             SteamManager.SaveFileOffline(text);
+#else
+            PlayerPrefs.SetString("HTM_SaveGame", text);
+            PlayerPrefs.Save();
 #endif
         }
 
         public string GetSaveFileContent()
         {
-#if UNITY_STEAM
+#if UNITY_WEBGL
+            return WebGLManager.Instance.LoadData("HTM_SaveGame");
+#elif UNITY_STEAMWORKS && !UNITY_WEBGL
             return SteamManager.GetSaveFileContent();
 #else
-            return string.Empty;
+            return PlayerPrefs.GetString("HTM_SaveGame", string.Empty);
 #endif
         }
     }
